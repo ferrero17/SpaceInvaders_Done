@@ -1,5 +1,6 @@
 package com.mygdx.game.objects;
 
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
@@ -9,6 +10,11 @@ public class World {
     Space space;
     Ship ship;
     AlienArmy alienArmy;
+    BitmapFont font,fontOver,puntuacion;
+    AlienShoot alienShoot;
+    Alien alien;
+
+
 
     int WORLD_WIDTH, WORLD_HEIGHT;
 
@@ -19,6 +25,9 @@ public class World {
         space = new Space();
         ship = new Ship(WORLD_WIDTH/2);
         alienArmy = new AlienArmy(WORLD_WIDTH, WORLD_HEIGHT);
+        font = new BitmapFont();
+        fontOver = new BitmapFont();
+        puntuacion = new BitmapFont();
     }
 
     public void render(float delta, SpriteBatch batch, Assets assets){
@@ -29,15 +38,48 @@ public class World {
         space.render(batch);
         ship.render(batch);
         alienArmy.render(batch);
+        font.draw(batch, "LIFES: " + ship.getVida(), 20, WORLD_HEIGHT - 5);
+        puntuacion.draw(batch,"SCORE: " + ship.getPuntuacion(), 120, WORLD_HEIGHT-5);
+
+        if(ship.getVida()==0||ship.getVida()<0){
+
+            font.draw(batch, "GAME OVER",WORLD_WIDTH/2-45, WORLD_HEIGHT/2);
+
+            alienArmy.speedX=0;
+            alienArmy.speedY=0;
+
+        }
         batch.end();
+
+//        if(alien.position.y==126){
+//            font.draw(batch, "GAME OVER",WORLD_WIDTH/2-45, WORLD_HEIGHT/2);
+//            alienArmy.speedX=0;
+//            alienArmy.speedY=0;
+//        }
+    }
+
+
+
+    public void delay(){
+        try
+        {
+            Thread.sleep(2000);
+        }
+        catch(InterruptedException ex)
+        {
+            Thread.currentThread().interrupt();
+        }
     }
 
     void update(float delta, Assets assets){
+
+        if(ship.vida>0){
         space.update(delta, assets);
         ship.update(delta, assets);
         alienArmy.update(delta, assets);
 
         checkCollisions(assets);
+        }
     }
 
     private void checkCollisions(Assets assets) {
@@ -71,6 +113,7 @@ public class World {
                         alien.kill();
                         shoot.remove();
                         assets.aliendieSound.play();
+                        ship.puntuacion=ship.getPuntuacion()+10;
                     }
                 }
             }

@@ -14,7 +14,7 @@ public class AlienShoot {
 
     float stateTime;
     State state;
-    float speed = 1;
+    float speed = 5;
 
     TextureRegion frame;
 

@@ -10,9 +10,12 @@ import java.util.Random;
 
 public class AlienArmy {
 
-    int x, y, maxX;
+    int x, y, maxX, minY, maxY;
 
-    float speed = 8f;
+    float speedX = 10f;
+    float speedY = 10f;
+
+    Ship ship;
 
     Array<Alien> aliens;
     Array<AlienShoot> shoots;
@@ -25,6 +28,8 @@ public class AlienArmy {
         this.x = 0;
         this.y = WORLD_HEIGHT-30;
         this.maxX = 60;
+        this.minY = 126;
+        this.maxY = y;
 
         aliens = new Array<Alien>();
         shoots = new Array<AlienShoot>();
@@ -78,18 +83,37 @@ public class AlienArmy {
 
     void move() {
         if (moveTimer.check()){
-            x += speed;
+            x += speedX;
 
             if(x > maxX){
                 x = maxX;
-                speed *= -1;
+                speedX *= -1;
+                y+=speedY;
             } else if(x < 0){
                 x = 0;
-                speed *= -1;
+                speedX *= -1;
+                y+=speedY;
             }
 
+            if(y>=maxY){
+
+                y=maxY;
+                speedY*=-1;
+                y+=speedY;
+            }else if(y<=minY){
+                y=minY;
+                speedY=0;
+                ship.setVida(0);
+
+            }
+
+            System.out.println(x+"      "+speedY+"   "+speedX+"   "+y);
             for (Alien alien : aliens) {
-                alien.position.x += speed;
+
+                if(x==maxX||x==0){
+                    alien.position.y+=speedY;
+                }
+                alien.position.x += speedX;
             }
         }
     }
@@ -104,7 +128,8 @@ public class AlienArmy {
 
             assets.alienSound.play();
 
-            shootTimer.set(random.nextFloat()%5+1);
+
+            shootTimer.set(random.nextFloat()%5);
         }
     }
 
