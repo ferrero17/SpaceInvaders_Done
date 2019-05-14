@@ -103,7 +103,7 @@ public class AlienArmy {
             }else if(y<=minY){
                 y=minY;
                 speedY=0;
-                ship.setVida(0);
+
 
             }
 

@@ -5,6 +5,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.mygdx.game.Assets;
+import com.mygdx.game.SpaceInvaders;
+import com.mygdx.game.Timer;
+import com.mygdx.game.screen.GameScreen;
 
 public class World {
     Space space;
@@ -13,8 +16,7 @@ public class World {
     BitmapFont font,fontOver,puntuacion;
     AlienShoot alienShoot;
     Alien alien;
-
-
+    Timer timer = new Timer(3);
 
     int WORLD_WIDTH, WORLD_HEIGHT;
 
@@ -38,35 +40,64 @@ public class World {
         space.render(batch);
         ship.render(batch);
         alienArmy.render(batch);
-        font.draw(batch, "LIFES: " + ship.getVida(), 20, WORLD_HEIGHT - 5);
+        font.draw(batch, "LIVE: " + ship.getVida(), 20, WORLD_HEIGHT - 5);
         puntuacion.draw(batch,"SCORE: " + ship.getPuntuacion(), 120, WORLD_HEIGHT-5);
 
-        if(ship.getVida()==0||ship.getVida()<0){
+        if(ship.getVida()==0 || ship.getVida() < 0){
 
+           // assets.shipDeath.play();
             font.draw(batch, "GAME OVER",WORLD_WIDTH/2-45, WORLD_HEIGHT/2);
-
             alienArmy.speedX=0;
             alienArmy.speedY=0;
 
-        }
-        batch.end();
+            timer.update(delta);
+                if (timer.check()){
+                    resetGame(space,ship,alienArmy,assets,delta, batch);
+                }
 
-//        if(alien.position.y==126){
-//            font.draw(batch, "GAME OVER",WORLD_WIDTH/2-45, WORLD_HEIGHT/2);
-//            alienArmy.speedX=0;
-//            alienArmy.speedY=0;
-//        }
+
+        }
+       // batch.end();
+
+        if(alienArmy.y <= 126){
+
+            font.draw(batch, "GAME OVER",WORLD_WIDTH/2-45, WORLD_HEIGHT/2);
+            alienArmy.speedX=0;
+            alienArmy.speedY=0;
+
+            timer.update(delta);
+            if (timer.check()){
+                resetGame(space,ship,alienArmy,assets,delta, batch);
+            }
+
+
+        }
+
+        if (alienArmy.aliens.size == 0){
+
+            font.draw(batch, "FELICHIDAAAAAAA",WORLD_WIDTH/2-45, WORLD_HEIGHT/2);
+            alienArmy.speedX=0;
+            alienArmy.speedY=0;
+
+            timer.update(delta);
+            if (timer.check()){
+                resetGame(space,ship,alienArmy,assets,delta, batch);
+            }
+
+
+        }
+
+       batch.end();
     }
 
 
 
-    public void delay(){
-        try
-        {
+    public void delay(SpriteBatch batch){
+        try {
+            font.draw(batch, "GAME OVER",WORLD_WIDTH/2-45, WORLD_HEIGHT/2);
             Thread.sleep(2000);
-        }
-        catch(InterruptedException ex)
-        {
+
+        } catch(InterruptedException ex) {
             Thread.currentThread().interrupt();
         }
     }
@@ -141,4 +172,19 @@ public class World {
             ship.position.x = 0;
         }
     }
+
+    public void resetGame(Space space, Ship ship, AlienArmy alienArmy, Assets assets, Float delta, SpriteBatch batch){
+
+          ship.vida = 3;
+          ship.puntuacion = 0;
+
+        puntuacion.draw(batch,"SCORE: " + ship.getPuntuacion(), 120, WORLD_HEIGHT-5);
+        this.alienArmy = new AlienArmy(WORLD_WIDTH,WORLD_HEIGHT);
+
+        space.update(delta, assets);
+        ship.update(delta, assets);
+        alienArmy.update(delta, assets);
+
+    }
+
 }
