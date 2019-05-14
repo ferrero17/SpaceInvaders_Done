@@ -45,7 +45,7 @@ public class World {
 
         if(ship.getVida()==0 || ship.getVida() < 0){
 
-           // assets.shipDeath.play();
+            assets.shipDeath.play();
             font.draw(batch, "GAME OVER",WORLD_WIDTH/2-45, WORLD_HEIGHT/2);
             alienArmy.speedX=0;
             alienArmy.speedY=0;
